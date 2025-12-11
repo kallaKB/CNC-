@@ -279,12 +279,7 @@ M30
 5. Lock spindle and axes during program upload if available.
 6. Keep E-stop and door interlocks functional.
 
-## Next Steps I can do for you (choose any)
-1. Create a downloadable ZIP of the full repo.
-2. Add diagrams (SVG) for path visualization and include in README.
-3. Generate simulated toolpaths (G-code preview images).
-4. Add CAM post-processor notes for Fanuc/Siemens/Heidenhain.
-5. Add license (MIT) and contribution guidelines to README.
+
 
 
 
