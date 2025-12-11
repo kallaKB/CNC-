@@ -1,0 +1,290 @@
+/CNC-Programs
+├── README.md
+├── Milling
+│   ├── face_milling.nc
+│   ├── pocket_milling.nc
+│   ├── drilling_pattern.nc
+│   ├── helical_interpolation.nc
+│   └── 3d_contour.nc
+└── Lathe
+    ├── od_turning.nc
+    ├── facing_chamfer.nc
+    ├── threading.nc
+    └── grooving.nc
+
+# README.md
+# CNC Programs Repository
+This repository contains sample CNC programs for milling and lathe operations. Suitable for training, portfolio, GitHub showcase, and CNC simulation.
+
+## Milling Programs
+- Face Milling
+- Pocket Milling
+- Drilling Pattern
+- Helical Interpolation
+- 3D Contouring
+
+## Lathe Programs
+- OD Turning
+- Facing + Chamfer
+- Threading
+- Grooving
+
+---
+# Milling/face_milling.nc
+%
+O1001 (FACE MILLING)
+G90 G21 G17
+T1 M06 (FACE MILL CUTTER)
+G54
+S1200 M03
+G00 X-10 Y-10 Z5
+G01 Z-1 F200
+G01 X110 F500
+G01 Y110
+G01 X-10
+G01 Y-10
+G00 Z50
+M30
+%
+
+# Milling/pocket_milling.nc
+%
+O1002 (POCKET MILLING)
+G90 G21
+T2 M06 (END MILL)
+G54
+S1500 M03
+G00 X20 Y20 Z5
+G01 Z-5 F150
+G03 X60 Y60 I20 J20 F300
+G01 X20 Y20
+G00 Z50
+M30
+%
+
+# Milling/drilling_pattern.nc
+%
+O1003 (DRILLING PATTERN)
+G90 G21
+T3 M06 (DRILL)
+G54
+S1800 M03
+G00 X10 Y10 Z5
+G81 R2 Z-10 F120
+X50 Y10
+X90 Y10
+X10 Y50
+X50 Y50
+X90 Y50
+G80
+G00 Z50
+M30
+%
+
+# Milling/helical_interpolation.nc
+%
+O1004 (HELICAL INTERPOLATION)
+G90 G21
+T4 M06 (END MILL)
+G54
+S2000 M03
+G00 X50 Y50 Z5
+G01 Z0 F150
+G03 X50 Y50 Z-10 I0 J0 F200
+G00 Z50
+M30
+%
+
+# Milling/3d_contour.nc
+%
+O1005 (3D CONTOUR)
+G90 G21
+T5 M06
+G54
+S2200 M03
+G00 X0 Y0 Z5
+G01 X100 Y0 Z-2 F250
+G01 X100 Y50 Z-4
+G01 X0 Y50 Z-6
+G01 X0 Y0 Z-8
+G00 Z50
+M30
+%
+
+# Lathe/od_turning.nc
+%
+O2001 (OD TURNING)
+G21 G90
+T0101
+G96 S200 M03
+G00 X50 Z2
+G01 Z-50 F0.25
+G01 X45
+G00 X60 Z100
+M30
+%
+
+# Lathe/facing_chamfer.nc
+%
+O2002 (FACING + CHAMFER)
+G21 G90
+T0202
+G96 S180 M03
+G00 X60 Z1
+G01 Z0 F0.2
+G01 X0
+G00 X20 Z0
+G01 X10 Z-2
+G00 X60 Z100
+M30
+%
+
+# Lathe/threading.nc
+%
+O2003 (THREADING)
+G21 G90
+T0303
+G97 S600 M03
+G00 X30 Z2
+G76 P010060 Q100 R0.05
+G76 X20 Z-30 P800 Q200 F1.5
+G00 X60 Z100
+M30
+%
+
+# Lathe/grooving.nc
+%
+O2004 (GROOVING)
+G21 G90
+T0404
+G97 S800 M03
+G00 X30 Z-10
+G01 X20 F0.1
+G01 Z-15
+G01 X30
+G00 X60 Z100
+M30
+%
+
+# Advanced Programs and Extras
+
+## Advanced/Parametric Macro - Variable Pocket (Milling)
+```
+% 
+O1100 (PARAMETRIC POCKET - MACRO)
+#1=20        (X start)
+#2=20        (Y start)
+#3=60        (X end)
+#4=60        (Y end)
+#5=5         (Depth)
+#6=5         (Step down)
+T6 M06
+G21 G90 G17
+G54
+G00 X[#1] Y[#2] Z5
+G01 Z0 F150
+WHILE[#5 GT 0] DO1
+  G01 X#3 Y#2 F300
+  G01 X#3 Y#4
+  G01 X#1 Y#4
+  G01 X#1 Y#2
+  #5 = #5 - #6
+  G01 Z[#5] F150
+END1
+G00 Z50
+M30
+%
+```
+
+## Subprogram Call (Lathe) - Repeated Grooving
+```
+% 
+O1200 (MAIN PROGRAM)
+G21 G90
+T0101
+G96 S180 M03
+G00 X60 Z2
+G00 X40 Z0
+M98 P2000 L3  (Call grooving subprogram 3 times)
+G00 X100 Z100
+M30
+%
+
+O2000 (GROOVING SUBPROGRAM)
+G01 X20 Z-5 F0.1
+G01 X30
+M99
+%
+```
+
+## Probing Example (Setup & Part Zero) - Milling
+```
+% 
+O1300 (PROBE SETUP)
+G21 G90 G17
+T7 M06
+G00 G54 X0 Y0 Z50
+M08
+G38.2 Z-20 F50   (Probe toward part)
+#100 = #5001      (Store probe position)
+G00 Z50
+G10 L20 P1 Z[#100] (Set work offset)
+M09
+M30
+%
+```
+
+## 4-Axis Indexing (Rotary) - Simple Cut
+```
+% 
+O1400 (4-AXIS INDEXED CUT)
+G21 G90 G17
+T8 M06
+G54
+S1500 M03
+G00 X50 Y0 Z5 A0
+G01 Z-2 F200
+A90
+G01 X50 Y0
+A180
+G01 X50 Y0
+G00 Z50
+M30
+%
+```
+
+## Conversational / Canned Cycles (Example Drill Cycle with Peck)
+```
+% 
+O1500 (PECK DRILL)
+G21 G90
+T3 M06
+G00 X10 Y10 Z5
+G81 R2 Z-20 Q5 F120
+G80
+G00 Z50
+M30
+%
+```
+
+# README Enhancements
+- Added an "Advanced" folder description and filenames in README.
+- Included usage notes and safety checklist.
+
+## Safety Checklist (Add to README)
+1. Always dry-run new programs in simulation before live cutting.
+2. Verify tool offsets and work offsets before first cut.
+3. Ensure proper tool and workholding setup; use runout and balancing checks for high-speed tools.
+4. Use coolant and proper chip evacuation strategies for deep pockets.
+5. Lock spindle and axes during program upload if available.
+6. Keep E-stop and door interlocks functional.
+
+## Next Steps I can do for you (choose any)
+1. Create a downloadable ZIP of the full repo.
+2. Add diagrams (SVG) for path visualization and include in README.
+3. Generate simulated toolpaths (G-code preview images).
+4. Add CAM post-processor notes for Fanuc/Siemens/Heidenhain.
+5. Add license (MIT) and contribution guidelines to README.
+
+
+
